@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
+import PushNotificationManager from "@/components/notification/push";
+// import InstallPrompt from "@/components/notification/install";
 
 interface Todo {
   id: number;
@@ -37,6 +39,9 @@ export default function Home() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      {/* debugging */}
+      <PushNotificationManager />
+      {/* debugging */}
       <h1 className="text-2xl font-bold mb-4 text-center">TODOアプリ</h1>
       <div className="flex mb-4">
         <Input
@@ -45,7 +50,7 @@ export default function Home() {
           onChange={(e) => setNewTodo(e.target.value)}
           placeholder="新しいタスクを入力"
           className="flex-grow mr-2"
-          onKeyPress={(e) => e.key === "Enter" && addTodo()}
+          onKeyUp={(e) => e.key === "Enter" && addTodo()}
         />
         <Button onClick={addTodo}>追加</Button>
       </div>
