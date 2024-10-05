@@ -7,10 +7,22 @@ TODOの内容を取得する
 
 * 戻り値
 ```
-[
-  { "id": 1, "text": "買い物をする", "completed": false },
-  { "id": 2, "text": "メールをチェックする", "completed": true }
-]
+{
+    "statusCode": 200,
+    "body": 
+    [
+        {
+            "id": 1,
+            "text": "買い物をする",
+            "completed": false
+        },
+        {
+            "id": 2,
+            "text": "メールをチェックする",
+            "completed": true
+        }
+    ]
+}
 ```
 
 ### POST
@@ -18,12 +30,18 @@ TODOを登録する
 
 * 引数
 ```
-{ "text": "部屋を掃除する" }
+{
+    "statusCode": 200,
+    "body":  {"text": "部屋を掃除する"}
+}
 ```
 
 * 戻り値
 ```
-{ "id": 3, "text": "部屋を掃除する", "completed": false }
+{
+    "statusCode": 200,
+    "body":  { "id": 3, "text": "部屋を掃除する", "completed": false }
+}
 ```
 
 ### PATCH 
@@ -31,7 +49,10 @@ TODOを完了状態にする
 
 *引数
 ```
-{ "id": 3}
+{
+    "statusCode": 200,
+    "body":  { "id": 3}
+}
 ```
 
 ### DELETE
@@ -39,7 +60,10 @@ TODOを消す
 
 *引数
 ```
-{ "id": 3}
+{
+    "statusCode": 200,
+    "body":  { "id": 3}
+}
 ```
 
   
