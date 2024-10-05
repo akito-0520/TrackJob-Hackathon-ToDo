@@ -43,13 +43,21 @@ TODOを登録する
 }
 ```
 
-* 戻り値
+* 戻り値(成功)
 ```
 {
     "statusCode": 200,
     "body":  { "id": 3, "text": "部屋を掃除する", "completed": false }
 }
 ```
+
+* 戻り値(textがない場合)
+```
+{
+    "statusCode": 400,
+    "body": "textがありません"
+}
+```  
 
 ### PATCH 
 TODOを完了状態にする
@@ -62,6 +70,22 @@ TODOを完了状態にする
 }
 ```
 
+* 戻り値(成功)
+```
+{
+    "statusCode": 200,
+    "body":  NULL
+}
+```
+
+* 戻り値(idがない場合)
+```
+{
+    "statusCode": 400,
+    "body": "idがありません"
+}
+```  
+
 ### DELETE
 TODOを消す
 
@@ -73,4 +97,19 @@ TODOを消す
 }
 ```
 
+* 戻り値(成功)
+```
+{
+    "statusCode": 200,
+    "body":  NULL
+}
+```
+
+* 戻り値(idがない場合)
+```
+{
+    "statusCode": 400,
+    "body": "idがありません"
+}
+```  
   
