@@ -1,8 +1,30 @@
+# Frontend
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Introduction
 
-まず、開発サーバーを実行します:
+まず、必要なパッケージをインストールし、環境変数を設定します。
+
+```bash
+npm install
+cp .env.local.example .env.local
+```
+
+`npm install`実行後に、コンソールに以下のメッセージが表示されます。
+
+```text
+Paste the following keys in your .env file:
+-------------------
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=...
+VAPID_PRIVATE_KEY=...
+```
+
+`.env.local` ファイルに表示されたキーを貼り付けます。
+
+## Development
+
+開発サーバーを実行します:
 
 ```bash
 npm install
@@ -26,21 +48,6 @@ npm run dev:https
 `app/page.tsx` を修正することでページの編集を開始できます。ファイルを編集するとページが自動的に更新されます。
 
 このプロジェクトでは [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) を使用して、Vercel の新しいフォントファミリー [Geist](https://vercel.com/font) を自動的に最適化して読み込みます。
-
-## 詳しく学ぶ
-
-Next.js について詳しく学ぶには、以下のリソースを参照してください:
-
-- [Next.js ドキュメント](https://nextjs.org/docs) - Next.js の機能と API について学びます。
-- [Learn Next.js](https://nextjs.org/learn) - インタラクティブな Next.js チュートリアル。
-
-[Next.js GitHub リポジトリ](https://github.com/vercel/next.js) をチェックしてみてください - フィードバックや貢献をお待ちしています！
-
-## Vercel へのデプロイ
-
-Next.js アプリをデプロイする最も簡単な方法は、Next.js の作成者による [Vercel プラットフォーム](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) を使用することです。
-
-詳細については、[Next.js デプロイメントドキュメント](https://nextjs.org/docs/app/building-your-application/deploying) をご覧ください。
 
 ## 開発のヘルプ
 
@@ -74,3 +81,18 @@ import { Button } from "@/components/ui/button";
 
 通知機能はService Workerを使用しているため、**HTTPSでのみ動作**します。
 通知を受け取るためには、通知の許可を求めるポップアップが表示されます。許可を求めるポップアップが表示されない場合は、ブラウザの設定を確認してください。
+
+## 詳しく学ぶ
+
+Next.js について詳しく学ぶには、以下のリソースを参照してください:
+
+- [Next.js ドキュメント](https://nextjs.org/docs) - Next.js の機能と API について学びます。
+- [Learn Next.js](https://nextjs.org/learn) - インタラクティブな Next.js チュートリアル。
+
+[Next.js GitHub リポジトリ](https://github.com/vercel/next.js) をチェックしてみてください - フィードバックや貢献をお待ちしています！
+
+## Vercel へのデプロイ
+
+Next.js アプリをデプロイする最も簡単な方法は、Next.js の作成者による [Vercel プラットフォーム](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) を使用することです。
+
+詳細については、[Next.js デプロイメントドキュメント](https://nextjs.org/docs/app/building-your-application/deploying) をご覧ください。

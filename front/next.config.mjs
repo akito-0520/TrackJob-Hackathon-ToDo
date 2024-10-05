@@ -40,10 +40,3 @@ const nextConfig = {
   },
 };
 export default nextConfig;
-
-// const httpsOptions = {
-//   key: fs.readFileSync(
-//     path.resolve(__dirname, "certificates/localhost-key.pem")
-//   ),
-//   cert: fs.readFileSync(path.resolve(__dirname, "certificates/localhost.pem")),
-// };
