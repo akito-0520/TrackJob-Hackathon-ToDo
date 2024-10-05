@@ -15,6 +15,7 @@ database = {
 @app.route('/', methods=['POST'])
 def add_todo():
     #httpMethodの確認
+    global database
     data = request.get_json()
     if not data["httpMethod"]:
         return {
@@ -90,7 +91,6 @@ def add_todo():
                 'body': json.dumps('指定したidのTODOがありません')
             }
 
-        global database
         database["todos"] = [t for t in database["todos"] if t["id"] != data["id"]]
         
         return {
