@@ -26,7 +26,7 @@ def add_todo():
     if data["httpMethod"] == "GET":
         return {
             'statusCode': 200,
-            'body'; jsonify(database["todos"])
+            'body': jsonify(database["todos"])
         }
 
 # システム全体の監視用の関数
