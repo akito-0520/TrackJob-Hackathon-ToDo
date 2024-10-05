@@ -5,6 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 まず、開発サーバーを実行します:
 
 ```bash
+npm install
 npm run dev
 ```
 
@@ -37,3 +38,22 @@ Next.js アプリをデプロイする最も簡単な方法は、Next.js の作�
 - shadcn@2.1.0
 
 を使用しています。shadcnはUIコンポーネントのライブラリです。詳細については <https://ui.shadcn.com/docs/>, <https://ui.shadcn.com/docs/installation/next> を参照してください。
+
+簡単な使い方としては、以下のコマンドを実行することでコンポーネントを追加できます。
+
+```bash
+npx shadcn@latest add button
+```
+
+すると、`app/components/ui/button.tsx` が作成されます。このファイルを編集することでボタンのデザインを変更できます。（そのままでも問題ありません）
+実際に使用する際は、
+
+```tsx
+import { Button } from "@/components/ui/button";
+
+...
+
+<Button onClick={addTodo}>追加</Button>
+```
+
+のようにして使用できます。
