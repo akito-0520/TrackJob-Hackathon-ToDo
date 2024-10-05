@@ -101,7 +101,15 @@ TODOを完了状態にする
     "statusCode": 400,
     "body": "idがありません"
 }
-```  
+```
+
+* 戻り値(指定されたidのTODOがない場合)
+ ```
+{
+    "statusCode": 404,
+    "body": "指定したidのTODOがありません"
+}
+``` 
 
 ### DELETE
 TODOを消す
@@ -129,4 +137,11 @@ TODOを消す
     "body": "idがありません"
 }
 ```  
-  
+
+* 戻り値(指定されたidのTODOがない場合)
+ ```
+{
+    "statusCode": 404,
+    "body": "指定したidのTODOがありません"
+}
+``` 
