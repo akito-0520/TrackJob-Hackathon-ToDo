@@ -1,6 +1,6 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## はじめに
+## Introduction
 
 まず、開発サーバーを実行します:
 
@@ -9,7 +9,19 @@ npm install
 npm run dev
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開いて結果を確認してください。
+ブラウザで <http://localhost:3000> を開いて結果を確認してください。
+
+**注意**: 通知機能のテストをローカルホストで行う場合は、開発サーバーはHTTPSで実行します。また、ブラウザにlocalhostを信頼するように設定する必要があります。
+以下のコマンドはlinuxの場合の例です。他のOSの場合は適切なコマンドを使用してください。(参考: [ssl - Can you use a service worker with a self-signed certificate? - Stack Overflow](https://stackoverflow.com/questions/38728176/can-you-use-a-service-worker-with-a-self-signed-certificate))
+
+```bash
+google-chrome-stable --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost/
+npm run dev:https
+```
+
+この場合は <https://localhost:3000> を開いてください。
+
+---
 
 `app/page.tsx` を修正することでページの編集を開始できます。ファイルを編集するとページが自動的に更新されます。
 
@@ -57,3 +69,8 @@ import { Button } from "@/components/ui/button";
 ```
 
 のようにして使用できます。
+
+### 通知機能について
+
+通知機能はService Workerを使用しているため、**HTTPSでのみ動作**します。
+通知を受け取るためには、通知の許可を求めるポップアップが表示されます。許可を求めるポップアップが表示されない場合は、ブラウザの設定を確認してください。
