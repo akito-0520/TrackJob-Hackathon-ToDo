@@ -29,6 +29,75 @@ def add_todo():
             'body': jsonify(database["todos"])
         }
 
+    #POST
+    if data["httpMethod"] == "POST":
+        if not data["text"]:
+            return {
+                'statusCode': 400,
+                'body': json.dumps('textがありありません')
+            }
+
+        id = 1
+        for i in database["todos"]:
+            if id == i["id"]:
+                id += 1
+        new_todo = {
+        "id": id,
+        "text": data["text"],
+        "completed": False
+        }
+        database["todos"].append(new_todo)
+
+        return {
+            'statusCode': 200,
+            'body': new_todo
+        }
+
+    #PATCH
+    if data["httpMethod"] == "PATCH":
+        if not data["id"]:
+            return {
+                'statusCode': 400,
+                'body': json.dumps('idがありありません')
+            }
+        
+        todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
+        if not todo:
+            return {
+                'statusCode': 404,
+                'body': json.dumps('指定したidのTODOがありません')
+            }
+        
+        todo["completed"] = False
+
+        return {
+            'statusCode': 200,
+            'body': NULL
+        }
+
+    #DELETE
+    if data["httpMethod"] == "PATCH":
+        if not data["id"]:
+            return {
+                'statusCode': 400,
+                'body': json.dumps('idがありありません')
+            }
+        
+        todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
+        if not todo:
+            return {
+                'statusCode': 404,
+                'body': json.dumps('指定したidのTODOがありません')
+            }
+
+        global database
+        database["todos"] = [t for t in database["todos"] if t["id"] != data["id"]]
+        
+        return {
+            'statusCode': 200,
+            'body': NULL
+        }
+
 # システム全体の監視用の関数
 def background_monitor():
     while True:
