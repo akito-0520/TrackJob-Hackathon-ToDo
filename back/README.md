@@ -16,7 +16,8 @@ python3 api.py
 ```
 deactivate
 ```
-  
+
+## APIの関数
 
 ### GET
 TODOの内容を取得する
