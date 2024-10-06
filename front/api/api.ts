@@ -1,7 +1,4 @@
 import axios from "axios";
-import * as dotenv from "dotenv"
-
-dotenv.config()
 
 interface axiosResponse {
     statusCode: number;
@@ -15,7 +12,7 @@ interface ToDo {
 }
 
 const axiosInstance = axios.create({
-    baseURL: process.env.API_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
         "Content-Type": "application/json",
     },
@@ -28,7 +25,7 @@ const fetchToDo = async():Promise<ToDo[]|undefined> => {
         httpMethod: "GET"
     }
     try {
-        const response:axiosResponse = await axiosInstance.post("", postData);
+        const response:axiosResponse = await axiosInstance.post("/", postData);
         if (response.statusCode === 200 && response.body){
             return JSON.parse(response.body)
         }
@@ -46,7 +43,7 @@ const registerTodo = async(text:string):Promise<ToDo|undefined> => {
             httpMethod: "POST",
             text: text,
         };
-        const response:axiosResponse = await axiosInstance.post("", data);
+        const response:axiosResponse = await axiosInstance.post("/", data);
         if (response.statusCode === 200 && response.body) {
             return JSON.parse(response.body)
         }
@@ -63,7 +60,7 @@ const patchToDo = async(id:number) => {
             httpMethod: "PATCH",
             id: id,
         }
-        await axiosInstance.post("", data);
+        await axiosInstance.post("/", data);
     } catch (e) {
         console.error("Error patching Todo:", e);
         throw e;
@@ -77,7 +74,7 @@ const deleteToDo = async(id:number) => {
             httpMethod: "DELETE",
             id: id,
         }
-        await axiosInstance.post("", data);
+        await axiosInstance.post("/", data);
     } catch (e) {
         console.error("Error deleting Todo:", e);
         throw e;
