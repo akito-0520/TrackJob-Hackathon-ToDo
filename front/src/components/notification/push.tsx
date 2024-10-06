@@ -1,84 +1,25 @@
-import { useEffect, useState } from "react";
+// push.tsx
 import {
-  subscribeUser,
-  unsubscribeUser,
   sendNotification,
 } from "@/lib/actions";
-import { urlBase64ToUint8Array } from "@/lib/base64";
+import { usePushNotification } from "@/contexts/notificationContext";
+import { Button } from "@/components/ui/button";
 
-export default function PushNotificationManager() {
-  const [isSupported, setIsSupported] = useState(false);
-  const [subscription, setSubscription] = useState<PushSubscription | null>(
-    null
-  );
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      registerServiceWorker();
-    }
-  }, []);
-
-  async function registerServiceWorker() {
-    const registration = await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
-      updateViaCache: "none",
-    });
-    const sub = await registration.pushManager.getSubscription();
-    setSubscription(sub);
-  }
-
-  async function subscribeToPush() {
-    const registration = await navigator.serviceWorker.ready;
-    const sub = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-      ),
-    });
-    setSubscription(sub);
-    await subscribeUser(sub.toJSON());
-  }
-
-  async function unsubscribeFromPush() {
-    await subscription?.unsubscribe();
-    setSubscription(null);
-    await unsubscribeUser();
-  }
+export function PushTestNotiButton() {
+  const { subscription } = usePushNotification();
 
   async function sendTestNotification() {
+    console.log(subscription);
+
     if (subscription) {
-      await sendNotification(message);
-      setMessage("");
+      await sendNotification("This is a test notification");
+    } else {
+      alert("You are not subscribed to push notifications.");
     }
   }
-
-  if (!isSupported) {
-    return <p>Push notifications are not supported in this browser.</p>;
-  }
-
   return (
-    <div>
-      <h3>Push Notifications</h3>
-      {subscription ? (
-        <>
-          <p>You are subscribed to push notifications.</p>
-          <button onClick={unsubscribeFromPush}>Unsubscribe</button>
-          <input
-            type="text"
-            placeholder="Enter notification message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <button onClick={sendTestNotification}>Send Test</button>
-        </>
-      ) : (
-        <>
-          <p>You are not subscribed to push notifications.</p>
-          <button onClick={subscribeToPush}>Subscribe</button>
-        </>
-      )}
-    </div>
+    <Button variant="secondary" onClick={sendTestNotification}>
+      通知テスト
+    </Button>
   );
 }
