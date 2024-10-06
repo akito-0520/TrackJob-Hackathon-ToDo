@@ -6,9 +6,12 @@
 
 * backフォルダに移動します。
 * 以下のコマンドを実行します。
+* Pythonのバージョンは3.12.6を使用しています。
+
 ```
-source venv/bin/activate
-python3 api.py     
+./venv/bin/activate
+pip install -r requirements.txt
+python3 api.py
 ```
 
 * 止める場合は「Command」 + 「C」を押します。
