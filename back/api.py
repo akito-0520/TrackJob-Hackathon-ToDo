@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 import threading
 import time
+from flask_cors import CORS  
 
 app = Flask(__name__)
+CORS(app)
 
 # インメモリデータベース
 database = {
@@ -20,11 +22,13 @@ def add_todo():
     if not data["httpMethod"]:
         return {
             'statusCode': 400,
-            'body': json.dumps('httpMethodがありありません')
+            'body': 'httpMethodがありありません'
         }
 
     #GET
     if data["httpMethod"] == "GET":
+        print("GETリクエストが来ました")
+        print(data)
         return {
             'statusCode': 200,
             'body': jsonify(database["todos"])
@@ -32,10 +36,12 @@ def add_todo():
 
     #POST
     if data["httpMethod"] == "POST":
+        print("POSTリクエストが来ました")
+        print(data)
         if not data["text"]:
             return {
                 'statusCode': 400,
-                'body': json.dumps('textがありありません')
+                'body': 'textがありありません'
             }
 
         id = 1
@@ -56,17 +62,19 @@ def add_todo():
 
     #PATCH
     if data["httpMethod"] == "PATCH":
+        print("PATCHリクエストが来ました")
+        print(data)
         if not data["id"]:
             return {
                 'statusCode': 400,
-                'body': json.dumps('idがありありません')
+                'body': 'idがありありません'
             }
         
         todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
         if not todo:
             return {
                 'statusCode': 404,
-                'body': json.dumps('指定したidのTODOがありません')
+                'body': '指定したidのTODOがありません'
             }
         
         todo["completed"] = False
@@ -77,18 +85,20 @@ def add_todo():
         }
 
     #DELETE
-    if data["httpMethod"] == "PATCH":
+    if data["httpMethod"] == "DELETE":
+        print("DELETEリクエストが来ました")
+        print(data)
         if not data["id"]:
             return {
                 'statusCode': 400,
-                'body': json.dumps('idがありありません')
+                'body': 'idがありありません'
             }
         
         todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
         if not todo:
             return {
                 'statusCode': 404,
-                'body': json.dumps('指定したidのTODOがありません')
+                'body': '指定したidのTODOがありません'
             }
 
         database["todos"] = [t for t in database["todos"] if t["id"] != data["id"]]
@@ -112,4 +122,4 @@ if __name__ == '__main__':
     monitor_thread.start()
 
     # Flaskサーバーの起動
-    app.run(debug=True)
+    app.run(host="localhost", port=8000, debug=True)
