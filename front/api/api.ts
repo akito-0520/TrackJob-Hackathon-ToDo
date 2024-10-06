@@ -1,14 +1,19 @@
 import axios from "axios";
 
-interface axiosResponse {
-    statusCode: number;
-    body: string | undefined
+interface ToDo {
+    id: number;
+    text: string;
+    completed: boolean;
 }
 
-interface ToDo {
-        id: number;
-        text: string;
-        completed: boolean;
+interface axiosResponse {
+    status: number;
+    data: data
+}
+
+interface data {
+    statusCode: number
+    body: ToDo | ToDo[] | undefined | string
 }
 
 const axiosInstance = axios.create({
@@ -20,14 +25,17 @@ const axiosInstance = axios.create({
 })
 
 // ToDoを取得する関数
-const fetchToDo = async():Promise<ToDo[]|undefined> => {
+const fetchTodo = async():Promise<ToDo[]|undefined> => {
     const postData = {
-        httpMethod: "GET"
+        "httpMethod": "GET"
     }
     try {
         const response:axiosResponse = await axiosInstance.post("/", postData);
-        if (response.statusCode === 200 && response.body){
-            return JSON.parse(response.body)
+        if (response.status === 200 && response.data && response.data.body){
+            const result = response.data.body as ToDo[]
+            return result
+        }else{
+            console.error(response.data.body)
         }
     } catch (e) {
         console.error("Error fetching ToDo:", e);
@@ -39,13 +47,14 @@ const fetchToDo = async():Promise<ToDo[]|undefined> => {
 // ToDoを登録する関数
 const registerTodo = async(text:string):Promise<ToDo|undefined> => {
     try {
-        const data = {
+        const postData = {
             httpMethod: "POST",
             text: text,
         };
-        const response:axiosResponse = await axiosInstance.post("/", data);
-        if (response.statusCode === 200 && response.body) {
-            return JSON.parse(response.body)
+        const response:axiosResponse = await axiosInstance.post("/", postData);
+        if (response.status === 200 && response.data && response.data.body) {
+            const result = response.data.body as ToDo
+            return result
         }
     } catch (e) {
         console.error("Error registering ToDo:", e);
@@ -54,7 +63,7 @@ const registerTodo = async(text:string):Promise<ToDo|undefined> => {
 }
 
 // ToDoを完了状態にする
-const patchToDo = async(id:number) => {
+const patchTodo = async(id:number) => {
     try {
         const data = {
             httpMethod: "PATCH",
@@ -68,7 +77,7 @@ const patchToDo = async(id:number) => {
 }
 
 // ToDoを削除する
-const deleteToDo = async(id:number) => {
+const deleteTodo = async(id:number) => {
     try {
         const data = {
             httpMethod: "DELETE",
@@ -81,5 +90,5 @@ const deleteToDo = async(id:number) => {
     }
 }
 
-const api = {fetchToDo, registerTodo, patchToDo, deleteToDo}
+const api = {fetchTodo, registerTodo, patchTodo, deleteTodo}
 export default api
