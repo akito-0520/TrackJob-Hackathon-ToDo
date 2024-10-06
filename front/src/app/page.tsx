@@ -33,11 +33,11 @@ export default function Home() {
   const addTodo = () => {
     const addTodo = async () => {
       await api.registerTodo(newTodo)
+      fetchTodo()
     }
 
     if (newTodo.trim() !== "") {
       addTodo()
-      fetchTodo()
       // setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
       setNewTodo("");
     }
@@ -46,11 +46,10 @@ export default function Home() {
   const toggleTodo = (id: number) => {
     const toggleTodo = async () => {
       await api.patchTodo(id)
+      fetchTodo()
     }
 
     toggleTodo()
-    fetchTodo()
-
     // setTodos(
     //   todos.map((todo) =>
     //     todo.id === id ? { ...todo, completed: !todo.completed } : todo
@@ -61,10 +60,10 @@ export default function Home() {
   const deleteTodo = (id: number) => {
     const deleteTodo = async () => {
       api.deleteTodo(id)
+      fetchTodo()
     }
 
     deleteTodo()
-    fetchTodo()
     // setTodos(todos.filter((todo) => todo.id !== id));
   };
 
