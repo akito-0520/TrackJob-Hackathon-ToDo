@@ -117,7 +117,7 @@ export default function SettingsButtonWithDialog() {
         console.error("Error unsubscribing from push notifications:", error);
       }
     }
-    updateNotificationSettings({ enabled: !subscription });
+    updateNotificationSettings({ enabled: subscription !== null });
   };
 
   return (
