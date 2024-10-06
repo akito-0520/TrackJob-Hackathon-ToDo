@@ -31,8 +31,8 @@ const fetchTodo = async():Promise<ToDo[]|undefined> => {
     }
     try {
         const response:axiosResponse = await axiosInstance.post("/", postData);
-        if (response.status === 200 && response.data && response.data.body){
-            const result = response.data.body as ToDo[]
+        if (response.status === 200 && response.data && response.data){
+            const result = response.data.body as ToDo[] | undefined
             return result
         }else{
             console.error(response.data.body)
