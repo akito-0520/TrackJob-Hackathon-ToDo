@@ -1,6 +1,7 @@
 # シンプルで使いやすいTODOアプリ
 
 このプロジェクトは、2024年10月5-6日に開催されたハッカソンで制作されたシンプルなTODOアプリです。
+[発表資料](https://docs.google.com/presentation/d/1Wsdpl1AnXIGhpAn4r_m5zQGSVDv1CUisnicJB1PD558/edit#slide=id.p)
 
 ## プロダクト概要
 日々のちょっとしたタスクを忘れずに管理するためのシンプルで使いやすいTODOアプリです。通学・通勤時間などの暇な時間を有効活用し、SNSをなんとなく眺める時間を減らすことを目的としています。
