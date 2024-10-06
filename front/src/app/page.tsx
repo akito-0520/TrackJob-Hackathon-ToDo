@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
-import PushNotificationManager from "@/components/notification/push";
+import { PushTestNotiButton } from "@/components/notification/push";
 // import InstallPrompt from "@/components/notification/install";
 import SettingsButtonWithDialog from "@/components/modal/settings";
+import { PushNotificationProvider } from "@/contexts/notificationContext";
 
 interface Todo {
   id: number;
@@ -39,65 +40,67 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      {/* debugging */}
-      <PushNotificationManager />
-      {/* debugging */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">TODOリスト</h1>
-        <SettingsButtonWithDialog />
-      </div>
-      <div className="flex mb-4">
-        <Input
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="新しいタスクを入力"
-          className="flex-grow mr-2"
-          onKeyUp={(e) => e.key === "Enter" && addTodo()}
-        />
-        <Button onClick={addTodo}>追加</Button>
-      </div>
-      <ul className="space-y-2">
-        {todos.map((todo) => (
-          <li
-            key={todo.id}
-            className="flex items-center justify-between p-2 border rounded"
-          >
-            <div className="flex items-center">
-              <Checkbox
-                id={`todo-${todo.id}`}
-                checked={todo.completed}
-                onCheckedChange={() => toggleTodo(todo.id)}
-                className="mr-2"
-              />
-              <label
-                htmlFor={`todo-${todo.id}`}
-                className={`${
-                  todo.completed ? "line-through text-gray-500" : ""
-                }`}
-              >
-                {todo.text}
-              </label>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => deleteTodo(todo.id)}
-              aria-label="タスクを削除"
+    <PushNotificationProvider>
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">TODOリスト</h1>
+          <div className="flex items-center">
+            <PushTestNotiButton />
+            <SettingsButtonWithDialog />
+          </div>
+        </div>
+        <div className="flex mb-4">
+          <Input
+            type="text"
+            value={newTodo}
+            onChange={(e) => setNewTodo(e.target.value)}
+            placeholder="新しいタスクを入力"
+            className="flex-grow mr-2"
+            onKeyUp={(e) => e.key === "Enter" && addTodo()}
+          />
+          <Button onClick={addTodo}>追加</Button>
+        </div>
+        <ul className="space-y-2">
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              className="flex items-center justify-between p-2 border rounded"
             >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-4 text-sm text-gray-500">
-        {todos.length === 0 ? (
-          <p>タスクがありません。新しいタスクを追加してください。</p>
-        ) : (
-          <p>{`${todos.length} 個のタスク`}</p>
-        )}
+              <div className="flex items-center">
+                <Checkbox
+                  id={`todo-${todo.id}`}
+                  checked={todo.completed}
+                  onCheckedChange={() => toggleTodo(todo.id)}
+                  className="mr-2"
+                />
+                <label
+                  htmlFor={`todo-${todo.id}`}
+                  className={`${
+                    todo.completed ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {todo.text}
+                </label>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => deleteTodo(todo.id)}
+                aria-label="タスクを削除"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 text-sm text-gray-500">
+          {todos.length === 0 ? (
+            <p>タスクがありません。新しいタスクを追加してください。</p>
+          ) : (
+            <p>{`${todos.length} 個のタスク`}</p>
+          )}
+        </div>
       </div>
-    </div>
+    </PushNotificationProvider>
   );
 }

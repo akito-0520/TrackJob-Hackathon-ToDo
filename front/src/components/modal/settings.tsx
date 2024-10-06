@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,34 +18,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Settings, Plus, X } from "lucide-react";
-
-interface NotificationSettings {
-  enabled: boolean;
-  items: NotificationItem[];
-}
-
-interface NotificationItem {
-  id: number;
-  time: string;
-  days: string[];
-  repeat: string;
-}
+import {
+  NotificationSettings,
+  NotificationItem,
+  usePushNotification,
+} from "@/contexts/notificationContext";
+import { subscribeUser, unsubscribeUser } from "@/lib/actions";
+import { urlBase64ToUint8Array } from "@/lib/base64";
 
 // 通知時間の設定などの設定画面
 export default function SettingsButtonWithDialog() {
-  const [notificationSettings, setNotificationSettings] =
-    useState<NotificationSettings>({
-      enabled: false,
-      items: [],
-    });
+  const {
+    subscription,
+    setSubscription,
+    notificationSettings,
+    setNotificationSettings,
+    isSupported,
+  } = usePushNotification();
 
+  // NotificationSettings
   function updateNotificationSettings(updates: Partial<NotificationSettings>) {
-    setNotificationSettings((prevSettings) => ({
-      ...prevSettings,
-      ...updates,
-    }));
+    setNotificationSettings((prevSettings: NotificationSettings) => {
+      const updatedItems = updates.items ? updates.items : prevSettings.items;
+      return {
+        ...prevSettings,
+        ...updates,
+        items: updatedItems,
+      };
+    });
   }
 
+  // NotificationItem
   const addNotificationItem = () => {
     const newItem: NotificationItem = {
       id: Date.now(),
@@ -58,6 +60,25 @@ export default function SettingsButtonWithDialog() {
       items: [...notificationSettings.items, newItem],
     });
   };
+
+  // NotificationItem.enabled
+  async function subscribeToPush() {
+    const registration = await navigator.serviceWorker.ready;
+    const sub = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+      ),
+    });
+    setSubscription(sub);
+    await subscribeUser(sub.toJSON());
+  }
+
+  async function unsubscribeFromPush() {
+    await subscription?.unsubscribe();
+    setSubscription(null);
+    await unsubscribeUser();
+  }
 
   const updateNotificationItem = (
     id: number,
@@ -74,6 +95,29 @@ export default function SettingsButtonWithDialog() {
       (item) => item.id !== id
     );
     updateNotificationSettings({ items: updatedItems });
+  };
+
+  // 通知の有効・無効化
+  const handleCheckedChange = async (checked: boolean) => {
+    if (!isSupported) {
+      alert("プッシュ通知がサポートされていません");
+      return;
+    }
+    updateNotificationSettings({ enabled: checked });
+    if (checked) {
+      try {
+        await subscribeToPush();
+      } catch (error) {
+        console.error("Error subscribing to push notifications:", error);
+      }
+    } else {
+      try {
+        await unsubscribeFromPush();
+      } catch (error) {
+        console.error("Error unsubscribing from push notifications:", error);
+      }
+    }
+    updateNotificationSettings({ enabled: !subscription });
   };
 
   return (
@@ -96,9 +140,7 @@ export default function SettingsButtonWithDialog() {
             <Switch
               id="notifications"
               checked={notificationSettings.enabled}
-              onCheckedChange={(checked) =>
-                updateNotificationSettings({ enabled: checked })
-              }
+              onCheckedChange={handleCheckedChange}
             />
           </div>
           {notificationSettings.items.map((item, index) => (
