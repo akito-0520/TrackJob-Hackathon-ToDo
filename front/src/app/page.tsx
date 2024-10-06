@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
 import PushNotificationManager from "@/components/notification/push";
 // import InstallPrompt from "@/components/notification/install";
+import SettingsButtonWithDialog from "@/components/modal/settings";
 
 interface Todo {
   id: number;
@@ -42,7 +43,10 @@ export default function Home() {
       {/* debugging */}
       <PushNotificationManager />
       {/* debugging */}
-      <h1 className="text-2xl font-bold mb-4 text-center">TODOアプリ</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">TODOリスト</h1>
+        <SettingsButtonWithDialog />
+      </div>
       <div className="flex mb-4">
         <Input
           type="text"
