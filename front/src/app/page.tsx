@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
+import api from "../../api/api";
 import { PushTestNotiButton } from "@/components/notification/push";
 // import InstallPrompt from "@/components/notification/install";
 import SettingsButtonWithDialog from "@/components/modal/settings";
@@ -20,23 +21,52 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
 
+  const fetchTodo = async() => {
+    const result = await api.fetchTodo()
+    if (result) {
+      setTodos(result);
+    }
+  }
+
+  useEffect(()=>{
+    fetchTodo()
+  },[]);
+
   const addTodo = () => {
+    const addTodo = async () => {
+      await api.registerTodo(newTodo)
+      fetchTodo()
+    }
+
     if (newTodo.trim() !== "") {
-      setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
+      addTodo()
+      // setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
       setNewTodo("");
     }
   };
 
   const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+    const toggleTodo = async () => {
+      await api.patchTodo(id)
+      fetchTodo()
+    }
+
+    toggleTodo()
+    // setTodos(
+    //   todos.map((todo) =>
+    //     todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    //   )
+    // );
   };
 
   const deleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    const deleteTodo = async () => {
+      api.deleteTodo(id)
+      fetchTodo()
+    }
+
+    deleteTodo()
+    // setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
