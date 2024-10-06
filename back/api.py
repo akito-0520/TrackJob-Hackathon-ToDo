@@ -45,9 +45,13 @@ def add_todo_to_db(text):
 def update_todo_in_db(todo_id, completed):
     conn = sqlite3.connect('todos.db')
     c = conn.cursor()
-    c.execute('UPDATE todos SET completed = ? WHERE id = ?', (completed, todo_id))
-    conn.commit()
+    todo = get_todo_by_id(todo_id)
+    if todo:
+        new_completed = not todo["completed"]  # 現在の状態を反転
+        c.execute('UPDATE todos SET completed = ? WHERE id = ?', (new_completed, todo_id))
+        conn.commit()
     conn.close()
+    return new_completed if todo else None
 
 # TODOを削除
 def delete_todo_from_db(todo_id):
@@ -80,10 +84,15 @@ def handle_request():
 
     # PATCH
     if data["httpMethod"] == "PATCH":
-        if "id" not in data or "completed" not in data:
-            return jsonify({'statusCode': 400, 'body': 'idまたはcompletedが指定されていません'}), 400
-        update_todo_in_db(data["id"], data["completed"])
-        return jsonify({'statusCode': 200, 'body': '更新しました'}), 200
+        if "id" not in data:
+            return jsonify({'statusCode': 400, 'body': 'idが指定されていません'}), 400
+        
+        new_completed = toggle_todo_in_db(data["id"])
+        
+        if new_completed is None:
+            return jsonify({'statusCode': 404, 'body': '指定されたidのTODOが見つかりません'}), 404
+        
+        return jsonify({'statusCode': 200, 'body': {'id': data["id"], 'new_completed': new_completed}}), 200
 
     # DELETE
     if data["httpMethod"] == "DELETE":
