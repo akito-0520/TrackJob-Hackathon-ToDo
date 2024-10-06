@@ -20,29 +20,29 @@ def add_todo():
     global database
     data = request.get_json()
     if not data["httpMethod"]:
-        return {
+        return jsonify({
             'statusCode': 400,
             'body': 'httpMethodがありありません'
-        }
+        }), 400
 
     #GET
     if data["httpMethod"] == "GET":
         print("GETリクエストが来ました")
         print(data)
-        return {
+        return jsonify({
             'statusCode': 200,
-            'body': jsonify(database["todos"])
-        }
+            'body': database["todos"]
+        }), 200
 
     #POST
     if data["httpMethod"] == "POST":
         print("POSTリクエストが来ました")
         print(data)
         if not data["text"]:
-            return {
+            return jsonify({
                 'statusCode': 400,
                 'body': 'textがありありません'
-            }
+            }), 400
 
         id = 1
         for i in database["todos"]:
@@ -55,58 +55,58 @@ def add_todo():
         }
         database["todos"].append(new_todo)
 
-        return {
+        return jsonify({
             'statusCode': 200,
             'body': new_todo
-        }
+        }), 200
 
     #PATCH
     if data["httpMethod"] == "PATCH":
         print("PATCHリクエストが来ました")
         print(data)
         if not data["id"]:
-            return {
+            return jsonify({
                 'statusCode': 400,
                 'body': 'idがありありません'
-            }
+            }), 400
         
         todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
         if not todo:
-            return {
+            return jsonify({
                 'statusCode': 404,
                 'body': '指定したidのTODOがありません'
-            }
+            }), 404
         
         todo["completed"] = False
 
-        return {
+        return jsonify({
             'statusCode': 200,
             'body': NULL
-        }
+        }), 200
 
     #DELETE
     if data["httpMethod"] == "DELETE":
         print("DELETEリクエストが来ました")
         print(data)
         if not data["id"]:
-            return {
+            return jsonify({
                 'statusCode': 400,
                 'body': 'idがありありません'
-            }
+            }), 400
         
         todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
         if not todo:
-            return {
+            return jsonify({
                 'statusCode': 404,
                 'body': '指定したidのTODOがありません'
-            }
+            }), 404
 
         database["todos"] = [t for t in database["todos"] if t["id"] != data["id"]]
         
-        return {
+        return jsonify({
             'statusCode': 200,
             'body': NULL
-        }
+        }), 200
 
 # システム全体の監視用の関数
 def background_monitor():
