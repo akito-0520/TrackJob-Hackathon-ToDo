@@ -41,8 +41,19 @@ def add_todo_to_db(text):
     conn.close()
     return new_todo_id
 
-# TODOの状態を更新
-def update_todo_in_db(todo_id, completed):
+# TODOをIDで取得
+def get_todo_by_id(todo_id):
+    conn = sqlite3.connect('todos.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM todos WHERE id = ?', (todo_id,))
+    row = c.fetchone()
+    conn.close()
+    if row:
+        return {'id': row[0], 'text': row[1], 'completed': bool(row[2])}
+    return None
+
+# TODOの状態を反転
+def toggle_todo_in_db(todo_id):
     conn = sqlite3.connect('todos.db')
     c = conn.cursor()
     todo = get_todo_by_id(todo_id)
