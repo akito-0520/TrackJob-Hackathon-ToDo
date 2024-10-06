@@ -63,13 +63,16 @@ const registerTodo = async(text:string):Promise<ToDo|undefined> => {
 }
 
 // ToDoを完了状態にする
-const patchTodo = async(id:number) => {
+const patchTodo = async(id:number):Promise<Number|undefined> => {
     try {
         const postData = {
             "httpMethod": "PATCH",
             "id": id,
         }
-        await axiosInstance.post("/", postData);
+        const response = await axiosInstance.post("/", postData);
+        if(response && response.data) {
+            return response.data
+        }
     } catch (e) {
         console.error("Error patching Todo:", e);
         throw e;
@@ -77,13 +80,16 @@ const patchTodo = async(id:number) => {
 }
 
 // ToDoを削除する
-const deleteTodo = async(id:number) => {
+const deleteTodo = async(id:number):Promise<Number|undefined> => {
     try {
         const data = {
             "httpMethod": "DELETE",
-            id: id,
+            "id": id,
         }
-        await axiosInstance.post("/", data);
+        const response = await axiosInstance.post("/", data);
+        if(response && response.data) {
+            return response.data
+        }
     } catch (e) {
         console.error("Error deleting Todo:", e);
         throw e;
