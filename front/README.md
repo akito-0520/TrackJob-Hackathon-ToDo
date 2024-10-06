@@ -9,9 +9,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ```bash
 npm install
 cp .env.local.example .env.local
+node generate-vapid-keys.mjs
 ```
 
-`npm install`実行後に、コンソールに以下のメッセージが表示されます。
+`node generate-vapid-keys.mjs`実行後に、コンソールに以下のメッセージが表示されます。
 
 ```text
 Paste the following keys in your .env file:
