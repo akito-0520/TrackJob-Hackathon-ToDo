@@ -59,7 +59,7 @@ export default function Home() {
 
   const deleteTodo = (id: number) => {
     const deleteTodo = async () => {
-      api.deleteTodo(id)
+      await api.deleteTodo(id)
       fetchTodo()
     }
 
