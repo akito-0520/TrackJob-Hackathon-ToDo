@@ -1,125 +1,113 @@
 from flask import Flask, jsonify, request
+import sqlite3
 import threading
-import time
 from flask_cors import CORS  
+import time
 
 app = Flask(__name__)
 CORS(app)
 
-# インメモリデータベース
-database = {
-    "todos": [
-        {"id": 1, "text": "買い物をする", "completed": False},
-        {"id": 2, "text": "メールをチェックする", "completed": True},
-    ]
-}
+# データベースの初期化
+def init_db():
+    conn = sqlite3.connect('todos.db')
+    c = conn.cursor()
+    # TODOテーブルの作成
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS todos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            text TEXT NOT NULL,
+            completed BOOLEAN NOT NULL CHECK (completed IN (0, 1))
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
+# TODOリストをデータベースから取得
+def get_all_todos():
+    conn = sqlite3.connect('todos.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM todos')
+    todos = [{'id': row[0], 'text': row[1], 'completed': bool(row[2])} for row in c.fetchall()]
+    conn.close()
+    return todos
+
+# TODOをデータベースに追加
+def add_todo_to_db(text):
+    conn = sqlite3.connect('todos.db')
+    c = conn.cursor()
+    c.execute('INSERT INTO todos (text, completed) VALUES (?, ?)', (text, False))
+    conn.commit()
+    new_todo_id = c.lastrowid
+    conn.close()
+    return new_todo_id
+
+# TODOの状態を更新
+def update_todo_in_db(todo_id, completed):
+    conn = sqlite3.connect('todos.db')
+    c = conn.cursor()
+    c.execute('UPDATE todos SET completed = ? WHERE id = ?', (completed, todo_id))
+    conn.commit()
+    conn.close()
+
+# TODOを削除
+def delete_todo_from_db(todo_id):
+    conn = sqlite3.connect('todos.db')
+    c = conn.cursor()
+    c.execute('DELETE FROM todos WHERE id = ?', (todo_id,))
+    conn.commit()
+    conn.close()
+
+# APIエンドポイントの実装
 @app.route('/', methods=['POST'])
-def add_todo():
-    #httpMethodの確認
-    global database
+def handle_request():
     data = request.get_json()
-    if not data["httpMethod"]:
-        return jsonify({
-            'statusCode': 400,
-            'body': 'httpMethodがありありません'
-        }), 400
 
-    #GET
+    # httpMethodの確認
+    if not data or "httpMethod" not in data:
+        return jsonify({'statusCode': 400, 'body': 'httpMethodが指定されていません'}), 400
+
+    # GET
     if data["httpMethod"] == "GET":
-        print("GETリクエストが来ました")
-        print(data)
-        return jsonify({
-            'statusCode': 200,
-            'body': database["todos"]
-        }), 200
+        todos = get_all_todos()
+        return jsonify({'statusCode': 200, 'body': todos}), 200
 
-    #POST
+    # POST
     if data["httpMethod"] == "POST":
-        print("POSTリクエストが来ました")
-        print(data)
-        if not data["text"]:
-            return jsonify({
-                'statusCode': 400,
-                'body': 'textがありありません'
-            }), 400
+        if "text" not in data:
+            return jsonify({'statusCode': 400, 'body': 'textが指定されていません'}), 400
+        new_todo_id = add_todo_to_db(data["text"])
+        return jsonify({'statusCode': 200, 'body': {'id': new_todo_id, 'text': data["text"], 'completed': False}}), 200
 
-        id = 1
-        for i in database["todos"]:
-            if id == i["id"]:
-                id += 1
-        new_todo = {
-        "id": id,
-        "text": data["text"],
-        "completed": False
-        }
-        database["todos"].append(new_todo)
-
-        return jsonify({
-            'statusCode': 200,
-            'body': new_todo
-        }), 200
-
-    #PATCH
+    # PATCH
     if data["httpMethod"] == "PATCH":
-        print("PATCHリクエストが来ました")
-        print(data)
-        if not data["id"]:
-            return jsonify({
-                'statusCode': 400,
-                'body': 'idがありありません'
-            }), 400
-        
-        todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
-        if not todo:
-            return jsonify({
-                'statusCode': 404,
-                'body': '指定したidのTODOがありません'
-            }), 404
-        
-        todo["completed"] = False
+        if "id" not in data or "completed" not in data:
+            return jsonify({'statusCode': 400, 'body': 'idまたはcompletedが指定されていません'}), 400
+        update_todo_in_db(data["id"], data["completed"])
+        return jsonify({'statusCode': 200, 'body': '更新しました'}), 200
 
-        return jsonify({
-            'statusCode': 200,
-            'body': NULL
-        }), 200
-
-    #DELETE
+    # DELETE
     if data["httpMethod"] == "DELETE":
-        print("DELETEリクエストが来ました")
-        print(data)
-        if not data["id"]:
-            return jsonify({
-                'statusCode': 400,
-                'body': 'idがありありません'
-            }), 400
-        
-        todo = next((t for t in database["todos"] if t['id'] == data["id"]), None)
-        if not todo:
-            return jsonify({
-                'statusCode': 404,
-                'body': '指定したidのTODOがありません'
-            }), 404
+        if "id" not in data:
+            return jsonify({'statusCode': 400, 'body': 'idが指定されていません'}), 400
+        delete_todo_from_db(data["id"])
+        return jsonify({'statusCode': 200, 'body': '削除しました'}), 200
 
-        database["todos"] = [t for t in database["todos"] if t["id"] != data["id"]]
-        
-        return jsonify({
-            'statusCode': 200,
-            'body': NULL
-        }), 200
+    return jsonify({'statusCode': 400, 'body': '不正なhttpMethodです'}), 400
 
-# システム全体の監視用の関数
-def background_monitor():
+# データベースの初期化
+init_db()
+
+def log_database_status():
     while True:
-        # 例: データベースの状態を定期的にログに出力
-        print(f"Database status: {database}")
-        time.sleep(100)  # 10秒に1回ログを出力
+        todos = get_all_todos()
+        print("現在のデータベースの状態: ")
+        for todo in todos:
+            print(f"ID: {todo['id']}, テキスト: {todo['text']}, 完了: {todo['completed']}")
+        time.sleep(10)  # 10秒ごとにデータベースの状態を出力
 
 if __name__ == '__main__':
-    # バックグラウンドで別のスレッドを実行
-    monitor_thread = threading.Thread(target=background_monitor)
+    # Flaskサーバーの起動
+    monitor_thread = threading.Thread(target=log_database_status)
     monitor_thread.daemon = True
     monitor_thread.start()
-
-    # Flaskサーバーの起動
     app.run(host="localhost", port=8000, debug=True)
